@@ -1,0 +1,17 @@
+//insert only ONE record
+db.students.insertOne({name: "Jack", major: "Biology", gpa: 3.5});
+
+db.students.insertOne({_id: 2, name: "Claire", major: "Marketing", gpa: 3.7, awards: ["Valedictorian", "Suma cum laude"]});
+
+db.students.insertOne({name: "Evan", major: "Astronomy", gpa: 3.7, grades: [90,88,95,78]});
+
+
+db.students.insertOne({name: "Kate", major: "Sociology", gpa: 3.2, contact: {phone: "333-3333", email: "studen@school.edu"}});
+
+db.students.insertOne({name: "Phil", major: "Chemistry", gpa: 2.5, startdate: new Date("2012-08-23")});
+
+//insert VARIOUS records, should be used in array format
+db.students.insertMany([
+{name: "Mike", major: "Computer Science", gpa: 2.7},
+{name: "Andrea", major: "Math", gpa: 4.0, awards: ["Summa Cum Laude"]}
+]);

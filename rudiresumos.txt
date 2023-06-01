@@ -1,0 +1,33 @@
+PROVA BANCO DE DADOS 2
+
+- INSERT:
+
+db.nome.insertOne({coluna:"conteudo"}); -- Insere uma coluna;
+db.nome.insertMany([{coluna1:"conteudo"},{coluna2:"conteudo"}]); -- Insere mais de uma coluna;
+
+- FIND:
+
+db.nome.find();
+db.nome.find({coluna:/^E/}); -- Encontra qualquer coluna que comece com E maiusculo;
+db.nome.find({coluna:/^E/}).count() -- Conta a quantidade de colunas que comecam com E;
+db.nome.find({coluna:/^E/}.pretty() -- Organiza???? sla o professor n explicou direito;
+
+- UPDATE:
+
+db.nome.updateOne({coluna:"desejada"},{$set:{conteudo:"desejado"}}); -- Update no primeiro que encontra;
+db.nome.updateMany({coluna:"desejada"},{$set:{conteudo:"desejado"}}); -- Update em todos que encaixam na restrição;
+{
+db.nome.updateOne({coluna:"desejada"},{$inc:{coluna2:2}}); -- $inc Incrementa a coluna desejada por 2;
+db.nome.updateOne({coluna:"desejada"},{$min:{coluna2:2}}); -- $min Limite superior (qualquer coluna acima de valor 2 desce para 2);
+db.nome.updateOne({coluna:"desejada"},{$max:{coluna2:2}}); -- $max Limite inferior (qualquer coluna abaixo de valor 2 sobe para 2);
+
+db.nome.updateOne({coluna:"desejada mas inexistente"},{$set:{coluna2:2}},{upsert:true}) -- Caso o valor da coluna buscada n exista o upsert cria;
+-- Criaria um objeto ({coluna:"desejada mas inexistente", coluna2: 2});
+
+db.nome.updateOne({coluna:"desejada"},{$set:{ano:2021},$setOnInsert:{coluna2:[v1,v2,v3],coluna3:"exemplo"}},{upsert:true}); -- $setOnInsert insere somente se houver um insert
+-- CASO o objeto nao exista e for criado um novo com o upsert, o $setOnInsert insere neste novo objeto;
+
+Atualizando um ARRAY:
+
+db.nome.updateOne({coluna:"exemplo", coluna:"desejada"},{$set:{"coluna.$":"novo valor"}}); -- "coluna.&" encontra o valor desejado no array e troca pelo novo valor;
+}

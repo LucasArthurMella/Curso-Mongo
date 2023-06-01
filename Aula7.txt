@@ -1,0 +1,13 @@
+//updates A SINGLE column on a document, the sintaxt is as it goes: first the filter put by {}, which specifies which value of which variable you're looking for, and then the set itself, put by {} containing the operator $set and then another {} containing the variable that will be updated together along with the value.
+db.students.updateOne({major: "Biology"}, {$set: {major: "Bio"}});
+
+
+//same as before but updates all it can find instead of only one.
+db.students.updateMany({major: "Bio"}, {$set: {major: "Biology"}});
+
+//replaces entirely a column and put the columns and values you specified in its place, in practice it does the same as update structure is column you want to replace and then columns that will replace it along with its values.
+db.students.replaceOne({major: "Biology"}, {name: "new name", major: "new major", gpa: 4.0});
+
+//deletes all documents that match the condition inside {}
+db.students.deleteOne({gpa: {$gte: 3.5}});
+db.students.deleteMany({gpa: {$gte: 3.5}});

@@ -1,0 +1,7 @@
+use giraffe
+
+db.createCollection("students")
+
+db.students.drop()
+
+db.createCollection("students")

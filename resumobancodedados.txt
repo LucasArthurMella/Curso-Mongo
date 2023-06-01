@@ -1,0 +1,148 @@
+use giraffe
+
+db.createCollection("students")
+
+db.students.drop()
+
+db.createCollection("students")
+	
+
+======================================
+
+
+//insert only ONE record
+db.students.insertOne({name: "Jack", major: "Biology", gpa: 3.5});
+
+db.students.insertOne({_id: 2, name: "Claire", major: "Marketing", gpa: 3.7, awards: ["Valedictorian", "Suma cum laude"]});
+
+db.students.insertOne({name: "Evan", major: "Astronomy", gpa: 3.7, grades: [90,88,95,78]});
+
+
+db.students.insertOne({name: "Kate", major: "Sociology", gpa: 3.2, contact: {phone: "333-3333", email: "studen@school.edu"}});
+
+db.students.insertOne({name: "Phil", major: "Chemistry", gpa: 2.5, startdate: new Date("2012-08-23")});
+
+//insert VARIOUS records, should be used in array format
+db.students.insertMany([{name: "Mike", major: "Computer Science", gpa: 2.7},{name: "Andrea", major: "Math", gpa: 4.0, awards: ["Summa Cum Laude"]}]);
+
+======================================
+
+db.students.find({});
+//makes the second field to be disabled
+db.students.find({}, {_id: 0});
+
+//limit to an amount to be returned
+db.students.find({}, {_id: 0}).limit(3);
+
+//sort, 1 puts in alphabetical order(ascending order) and -1 to unaphabetical order(descending order) acording to variable selected
+db.students.find({}, {_id: 0}).sort({gpa:-1, major:1});
+
+//the first {} is actually where our filter will be, in this case it will return all entries where the value equals the value of major
+db.students.find({major: "Biology"},{_id:0});
+db.students.find({major: "Biology", name: "Jack"},{_id:0});
+
+//Challenge: find all studens who are chemistry majors or named Jack
+//$or: the structure is at follow, $or followed by a [] and inside the [] multiple {} with the conditions, it returns if any of the conditions inside are true.
+db.students.find({$or: [{major: "Chemistry"}, {name: "Jack"}]},{_id:0});
+
+
+// $gt: used to find all resulties who value of variable is greater than specified, structure is as follows: name of the variable, followd by {} and inside it the $gt operator with the value (gte is valid if you want greater or equal):
+db.students.find({gpa: {$gt: 3.5}},{_id:0});	
+
+// $lte: same as $gt but used for less than instead of greater than (lte is valid if you want lesser or equal)
+db.students.find({gpa: {$lte: 3.2}},{_id: 0}).sort({gpa:-1});
+
+//all operators: $eq, $ne, $lt, $lte, $gt, $gte
+
+//$in serves to return any documents that have any values equal to the ones inside of the [] brackets relative to that variable before $in
+//$nin would be the opposite.
+db.students.find({name: {$in: ["Kate","Claire"]}},{_id: 0});
+
+//$exists: will return all documents where specified element exists:
+db.students.find({awards: {$exists: true} }, {_id:0});
+
+//$type: in some cases some variables on collections dispite being of a certain type can have diferent types on different columns, for this reason there is the atribute $type, where you will only return the documents where a certain column will have a certain type, in this case you would only return columns where the name variable is of type string:
+db.students.find({name: {$type: 2}},{_id:0});
+
+//apliccable for an array, specify the array index and the required value this index should have in order for the document to be appeared, should have "".
+db.students.find({"grades.0": 90},{_id:0});
+
+//$elemMatch will return results where the specified value is equal to any index of certain array:
+db.students.find({grades: {$elemMatch: {$gte: 80}} },{_id: 0});
+db.students.find({grades: {$elemMatch: {$eq: 90}} },{_id: 0});
+
+//$size return any columns that have an array of the specified size.
+db.students.find({grades: {$size: 4}},{_id: 0});
+
+======================================
+
+//updates A SINGLE column on a document, the sintaxt is as it goes: first the filter put by {}, which specifies which value of which variable you're looking for, and then the set itself, put by {} containing the operator $set and then another {} containing the variable that will be updated together along with the value.
+db.students.updateOne({major: "Biology"}, {$set: {major: "Bio"}});
+
+
+//same as before but updates all it can find instead of only one.
+db.students.updateMany({major: "Bio"}, {$set: {major: "Biology"}});
+
+//replaces entirely a document and put the columns and values you specified in its place, in practice it does the same as update structure but for the whole document, it is document containing a column with a valid you want to replace and then columns that will replace it along with its values.
+db.students.replaceOne({major: "Biology"}, {name: "new name", major: "new major", gpa: 4.0});
+
+//deletes all documents that match the condition inside {}
+db.students.deleteOne({gpa: {$gte: 3.5}});
+db.students.deleteMany({gpa: {$gte: 3.5}});
+
+======================================
+
+//collection added
+
+db.purchase_orders.insertMany([
+{product: "toothbrush", total:4.75, customer: "Mike"},
+{product: "guitar", total: 199.99, customer: "Tom"},
+{product: "milk", total: 11.33, customer: "Mike"},
+{product: "pizza", total: 8.50, customer: "Karen"},
+{product: "toothbrush", total:4.75, customer: "Karen"},
+{product: "pizza", total:4.75, customers: "Dave"},
+{product: "toothbrush", total:4.75, customer:"Mike"}
+])
+
+db.purchase_orders.insertMany([{product: "toothbrush", total:4.75, customer: "Mike"},{product: "guitar", total: 199.99, customer: "Tom"},{product: "milk", total: 11.33, customer: "Mike"},{product: "pizza", total: 8.50, customer: "Karen"},{product: "toothbrush", total:4.75, customer: "Karen"},{product: "pizza", total:4.75, customers: "Dave"},{product: "toothbrush", total:4.75, customer:"Mike"}])
+
+
+
+//counts how many of an specific field the collection itself has, structure is the .count followed by () and then the {} with the column and the value it should have in order to count
+db.purchase_orders.count({product: "toothbrush"});
+
+
+//distinct returns the many different column values that there are, even if they are repeated they will only be returned once
+db.purchase_orders.distinct("product");
+
+
+
+//function that has 2 elements: match and group, the match contains a filter, it will only consider some document if it passes through match conditions, the group function has 2 elements, the field _id and the second one with any name made up by you (which is the one that will be displayed) and both are followed by a specific column that has a $ behind it. What the group does basically is that it gets and distincts all the single elements of _id, and then does some operation to another column chosen by on you the second field, in this specific case it is getting all names of the collection and suming the total wherenever these names appear, and diving it by name and total of each name:
+
+db.purchase_orders.aggregate(
+[{$match: {}}, 
+{$group: {_id: "$customer", total:{$sum: "$total"}}}
+]);
+
+db.purchase_orders.aggregate([{$match: {}}, {$group: {_id: "$customer", total:{$sum: "$total"}}}]);
+
+
+//in this case it is getting each product and suming up the money everytime the products appears and then displaying the total each product has (in practice it's showing how much money was spent on each product)
+db.purchase_orders.aggregate([{$match: {}}, {$group: {_id: "$product", total:{$sum: "$total"}}}]);
+
+//it also has the option to sort by some column, by descending or ascending order.
+db.purchase_orders.aggregate([{$match: {}}, {$group: {_id: "$product", total:{$sum: "$total"}}}, {$sort: {total: -1}}]);
+
+db.purchase_orders.aggregate([{$match: {}}, {$group: {_id: "$customer", total:{$sum: "$total"}}}, {$sort: {total: -1}}]);
+
+//filter
+db.purchase_orders.aggregate([{$match: {customer: {$in: ["Mike", "Karen"]}}}, {$group: {_id: "$customer", total:{$sum: "$total"}}}, {$sort: {total: -1}}]);
+
+
+// nomes que terminem com a // Em SQL... WHERE (nome like %A)
+db.pessoas.find({nome:{$regex:"a\$"}});
+
+// nomes que comecem com A // Em SQL... WHERE (nome like A%)
+db.pessoas.find({nome:{$regex:"^A"}});
+
+

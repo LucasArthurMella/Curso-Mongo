@@ -1,0 +1,48 @@
+//collection added
+
+db.purchase_orders.insertMany([
+{product: "toothbrush", total:4.75, customer: "Mike"},
+{product: "guitar", total: 199.99, customer: "Tom"},
+{product: "milk", total: 11.33, customer: "Mike"},
+{product: "pizza", total: 8.50, customer: "Karen"},
+{product: "toothbrush", total:4.75, customer: "Karen"},
+{product: "pizza", total:4.75, customers: "Dave"},
+{product: "toothbrush", total:4.75, customer:"Mike"}
+])
+
+db.purchase_orders.insertMany([{product: "toothbrush", total:4.75, customer: "Mike"},{product: "guitar", total: 199.99, customer: "Tom"},{product: "milk", total: 11.33, customer: "Mike"},{product: "pizza", total: 8.50, customer: "Karen"},{product: "toothbrush", total:4.75, customer: "Karen"},{product: "pizza", total:4.75, customers: "Dave"},{product: "toothbrush", total:4.75, customer:"Mike"}])
+
+
+
+//counts how many of an specific field the collection itself has, structure is the .count followed by () and then the {} with the column and the value it should have in order to count
+db.purchase_orders.count({product: "toothbrush"});
+
+
+//distinct returns the many different column values that there are, even if they are repeated they will only be returned once
+db.purchase_orders.distinct("product");
+
+
+
+//function that has 2 elements: match and group, the match contains a filter, it will only consider some document if it passes through match conditions, the group function has 2 elements, the field _id and the second one with any name made up by you (which is the one that will be displayed) and both are followed by a specific column that has a $ behind it. What the group does basically is that it gets and distincts all the single elements of _id, and then does some operation to another column chosen by on you the second field, in this specific case it is getting all names of the collection and suming the total wherenever these names appear, and diving it by name and total of each name:
+
+db.purchase_orders.aggregate(
+[{$match: {}}, 
+{$group: {_id: "$customer", total:{$sum: "$total"}}}
+]);
+
+db.purchase_orders.aggregate([{$match: {}}, {$group: {_id: "$customer", total:{$sum: "$total"}}}]);
+
+
+//in this case it is getting each product and suming up the money everytime the products appears and then displaying the total each product has (in practice it's showing how much money was spent on each product)
+db.purchase_orders.aggregate([{$match: {}}, {$group: {_id: "$product", total:{$sum: "$total"}}}]);
+
+//it also has the option to sort by some column, by descending or ascending order.
+db.purchase_orders.aggregate([{$match: {}}, {$group: {_id: "$product", total:{$sum: "$total"}}}, {$sort: {total: -1}}]);
+
+db.purchase_orders.aggregate([{$match: {}}, {$group: {_id: "$customer", total:{$sum: "$total"}}}, {$sort: {total: -1}}]);
+
+//filter
+db.purchase_orders.aggregate([{$match: {customer: {$in: ["Mike", "Karen"]}}}, {$group: {_id: "$customer", total:{$sum: "$total"}}}, {$sort: {total: -1}}]);
+
+
+
